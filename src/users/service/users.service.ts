@@ -1,20 +1,37 @@
 import { Injectable } from '@nestjs/common';
-import { User } from '../entities/user.entiti';
+import { ConfigService } from '@nestjs/config';
+import { User } from '../entities/user.entity';
+import { Order } from '../entities/order.entity';
+
+import { ProductsService } from './../../products/service/products.service';
 import { CreateUserDto, UpdataUserDto } from '../dto/user.dto';
 
 @Injectable()
 export class UsersService {
+  constructor(
+    private products_service: ProductsService,
+    private config_service: ConfigService,
+  ) {}
   private conter_id = 1;
   private users: User[] = [
     {
       id: 1,
-      name: 'user_1',
       email: 'hola',
       password: '122',
     },
   ];
 
+  private orders: Order[] = [
+    {
+      data: new Date(),
+      user: this.users[0],
+      products: [],
+    },
+  ];
+
   findAll(): User[] {
+    const apiKey = this.config_service.get('API_KEY');
+    console.log(apiKey);
     return this.users;
   }
 
@@ -56,6 +73,18 @@ export class UsersService {
     return {
       message: 'successfully delete',
       id,
+    };
+  }
+
+  getOrderByUser(id: number): Order {
+    const user = this.users.find((user) => user.id === id);
+    if (!user) {
+      throw new Error(`User with id ${id} not found`);
+    }
+    return {
+      data: new Date(),
+      user,
+      products: this.products_service.find_all(),
     };
   }
 }

@@ -3,9 +3,6 @@ import { IsString, IsEmail, IsBoolean, IsNotEmpty } from 'class-validator';
 
 export class CreateUserDto {
   @IsString()
-  @IsNotEmpty()
-  readonly name: string;
-
   @IsEmail()
   @IsNotEmpty()
   readonly email: string;
@@ -17,6 +14,9 @@ export class CreateUserDto {
   @IsBoolean()
   @IsNotEmpty()
   readonly status: boolean;
+
+  @IsNotEmpty()
+  readonly role: string;
 }
 
 export class UpdataUserDto extends PartialType(CreateUserDto) {}
